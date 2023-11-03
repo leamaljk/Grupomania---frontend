@@ -38,7 +38,6 @@ export default {
       title: '',
       message: '',
       file: null,
-      usersRead: [],
       userId: localStorage.getItem('userId')
     };
   },
@@ -55,14 +54,11 @@ export default {
         return;
       }
 
-      // Push the userId to the usersRead array before the axios call.
-      this.usersRead.push(this.userId);
-
       const formData = new FormData();
       formData.append('userId', this.userId);
       formData.append('title', this.title);
       formData.append('message', this.message);
-      formData.append('usersRead', JSON.stringify(this.usersRead)); // Convert array to string for FormData.
+      
       if (this.file) {
         formData.append('mediaUrl', this.file);
       }
@@ -77,9 +73,9 @@ export default {
         };
 
         const response = await axios.post('http://localhost:3000/api/posts', formData, config);
+        
         if (response.status === 201) {
           console.log(response.data);
-          console.log(this.usersRead);
           this.$router.push({ path: '/' });
         }
       } catch (error) {
@@ -95,7 +91,6 @@ export default {
   },
 };
 </script>
-
 
 <style lang="scss" scoped>
 .container {

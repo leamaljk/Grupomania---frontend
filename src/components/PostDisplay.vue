@@ -1,24 +1,14 @@
 <template>
   <div class="post-container">
-    <div 
-      class="post" 
-      v-for="(post, index) in posts" 
-      :key="index" 
-      @click="viewPost(post.id)"
-    >      
-      <div v-if="post.unread" class="unread-label">
-        <span>Unread</span>
+    <div class="post" v-for="(post, index) in posts"
+      :key="index" @click="viewPost(post.id)">
+    
+      <div v-if="!post.usersRead.map(Number).includes(numericUserId)" class="unread-label">
+        <span>New</span>
       </div>
       
       <h2 class="post-title">{{ post.title }}</h2>
-      <p class="post-message3 ">{{ post.message }}</p>
-      
-        <img 
-          v-if="post.image" 
-          class="post-mediaUrl" 
-          :src="post.mediaUrl" 
-          alt="Post Image" 
-        />
+      <p class="post-message">{{ post.message }}</p>
       
     </div>
   </div>
@@ -31,6 +21,16 @@ export default {
       type: Array,
       required: true,
     },
+    userId: {
+      type: String,
+      required: true,
+    },
+  },
+  computed: {
+    // Convert userId prop to a number for comparison
+    numericUserId() {
+      return parseInt(this.userId, 10);
+    }
   },
   methods: {
     viewPost(id) {
@@ -39,23 +39,26 @@ export default {
   }
 };
 </script>
+
 <style scoped>
-
 .unread-label {
-  border: 2px solid black;
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: 5px;
+  padding: 5px 15px;
   color: white;
-  background-color: red;
-  height: 15px;
-  width: 50px;
+  background: linear-gradient(135deg, #46ed68, #f3f387);
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 10px;
-  text-align: center;
+  top: 0px;
+  right: 0px;
+  transition: transform 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
 }
-
 
 .post {
   background-color: #ffffff;
@@ -89,7 +92,6 @@ h2.post-title:after {
 
 
 
-/* Optional: Add hover effect for an interactive feel */
 .post:hover {
     transform: translateY(-5px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
@@ -106,5 +108,34 @@ p.post-message3 {
 }
 
 
+@media (max-width: 768px) {
+  .unread-label {
+    padding: 3px 10px;
+    font-size: 0.70rem;
+    position: relative;
+    margin-bottom: 20px;
+    width: 60px;
+  }
 
+  .post {
+    margin: 10px auto;
+    margin-right: 20px;
+    max-width: calc(100% - 40px);
+    float: none;
+  }
+
+  .post-title {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+  }
+
+  h2.post-title:after {
+    width: 40px;
+    height: 2px;
+  }
+
+  p.post-message3 {
+    font-size: 1em;
+  }
+}
 </style>

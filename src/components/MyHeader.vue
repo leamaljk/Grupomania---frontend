@@ -1,13 +1,13 @@
 <template>
 <header>
-    
-      <h1 class="h1-header">
-        <img src="../assets/images/logos/icon-left-font-monochrome-white.png" alt="Logo" class="logo" width="150" height="40">
-      </h1>
-      <h2 class="h2-header"> We have a new project that we wish to entrust<br > to CONNECT-E. <br >It
+    <div class="h1-header"> 
+      <img src="../assets/images/logos/icon-left-font-monochrome-white.png" alt="Logo" class="logo" width="150" height="40">
+    </div>
+    <div class="h2-header">
+       We have a new project that we wish to entrust<br > to CONNECT-E. <br >It
 focuses on the creation of a modern and fun <br >internal social network, that will allow<br > employees to
 get to know each other <br >in a more informal setting.
-</h2>
+    </div>
   
     <div class="image-container">
       <img :src="imageUrl" alt="Your Photo" />
@@ -37,6 +37,7 @@ export default {
 </script>
 
 <style scoped>
+
 header {
   position: relative;
   background-color: rgba(234, 228, 223, 0.928);
@@ -46,10 +47,6 @@ header {
   justify-content: space-between;
   width: 100%;
   height: 230px;
-}
-
-header {
-  flex: 1;
 }
 
 .h1-header {
@@ -72,7 +69,7 @@ header {
   top: 10px;
   text-align: left;
   bottom: 40px;
-  color:#1d1b31 ;
+  color:#1d1b31;
   text-align: center;
 }
 
@@ -84,11 +81,10 @@ header {
   right: 380px;
   top: 20px;
 }
- 
+
 .image-container img:hover{
   transform: scale(1.2);
 }
-
 
 img {
   width: 100%;
@@ -96,5 +92,65 @@ img {
   object-fit: cover;
   border-radius: 50%;
   margin-left: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+  }
+
+  .h1-header, .h2-header, .image-container {
+    width: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    margin: 10px;
+  }
+
+  .h1-header {
+    align-self: center;
+    width: 300px;
+    height: 100px;
+    
+  }
+
+  .h2-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .image-container {
+    justify-content: center;
+    gap: 10px;
+  }
+  .image-container img {
+    margin-left: 0;
+    width: 120px;
+    height: 120px;
+    margin-top: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .h2-header {
+    font-size: 14px; 
+  }
+
+  .image-container {
+    flex-direction: row;
+    gap: 10px;
+    
+  }
+
+  .image-container img {
+    margin-left: 0;
+    width: 100px;
+    height: 100px;
+    margin-top: 50px;
+  }
 }
 </style>

@@ -1,8 +1,17 @@
 <template>
+  <div class="title-container">
   <div id="title">
-    <h1>Unveiling the Layers: Welcome to</h1>
-    <img class="h2-header" src="../assets/images/logos/icon-left-font-monochrome-black.png" alt="Logo">
-    <h3>Diving deeper into the nuanced perspectives and intricacies of today's trending discussions.</h3>    
+    <!-- h1 title  div -->
+    <div class="h1-title">Unveiling the Layers: Welcome to</div>
+    <!-- image div -->
+    <div class="h2-header">
+    <img  src="../assets/images/logos/icon-left-font-monochrome-black.png" alt="Logo">
+    </div>
+    <!-- h3 title div -->
+    <div class="h3-title">
+    <h3>Diving deeper into the nuanced perspectives and intricacies of today's trending discussions.</h3>
+    </div>
+    <!-- end of id title # -->
   </div>
   <div class="single-post-container">
     <div class="post-header">
@@ -26,6 +35,7 @@
       <p class="post-author">Author: {{ post.userId }}</p>
     </div>
   </div>
+  </div>
 </template>
 
 <script>
@@ -36,90 +46,89 @@ export default {
     return {
       post: {},
       image: false,
-      video: false
+      video: false,
+      hasBeenRead: false // This will keep track if the user has read the post
     };
   },
   beforeCreate() {
+    // Redirect to login if no user ID is present in localStorage
     const userId = localStorage.getItem('userId');
     if (!userId) {
       this.$router.push({ path: '/login' });
     }
   },
   async mounted() {
-    const postId = this.$route.params.id;
-    const token = JSON.parse(localStorage.getItem('token'));
-    const userId = JSON.parse(localStorage.getItem('userId'));
-    
-    try {
-      let response = await axios.get(`http://localhost:3000/api/posts/singlepost/${postId}`, {
+  const postId = this.$route.params.id;
+  const token = localStorage.getItem('token'); // Assume token is stored as a string
+  // Parse userId as a number
+  const userId = Number(localStorage.getItem('userId')); // Convert to number for comparison
+
+  try {
+    // Get post details
+    let response = await axios.get(`http://localhost:3000/api/posts/singlepost/${postId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    this.post = response.data;
+
+    // Check if the post has been read by converting each userId in the usersRead array to a number
+    this.hasBeenRead = this.post.usersRead && this.post.usersRead.map(Number).includes(userId);
+
+    // Check if the mediaUrl is an image
+    this.image = /\.(jpg|jpeg|png|gif|webp)$/i.test(this.post.mediaUrl);
+
+    // Check if the mediaUrl is a video
+    this.video = /\.(mp4|webm|ogg)$/i.test(this.post.mediaUrl);
+
+    // If the post has not been read, mark it as read
+    if (!this.hasBeenRead) {
+      // Mark the post as read by sending the numeric userId
+      await axios.put(`http://localhost:3000/api/posts/${postId}`, { postUserId: userId }, {
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         }
       });
-
-      this.post = response.data;
-
-      if (this.post.mediaUrl) {
-        if (
-          this.post.mediaUrl.includes('jpeg') ||
-          this.post.mediaUrl.includes('jpg') ||
-          this.post.mediaUrl.includes('webp') ||
-          this.post.mediaUrl.includes('gif')
-        ) {
-          this.image = true;
-        } else if (
-          this.post.mediaUrl.includes('mp4') ||
-          this.post.mediaUrl.includes('oog') ||
-          this.post.mediaUrl.includes('webm')
-        ) {
-          this.video = true;
-        }
-      }
-
-      await axios.post(`http://localhost:3000/api/posts/${postId}`, { postUserId: userId }, {
-        headers: {
-          'content-type': 'application/json',
-          Authorization: `Bearer ${token}`
-        }
-      });
-      
-    } catch (error) {
-      if (error.response && error.response.status === 404) {
-        console.error('Resource not found.');
-        // Handle the 404 error, maybe redirect the user or show an error message.
-      } else {
-        console.error('There was an error:', error.message);
-      }
+      // Update local state
+      this.hasBeenRead = true;
     }
+  } catch (error) {
+    console.error('There was an error:', error.message);
+    // Additional error handling logic as needed
   }
+}
 };
 </script>
 
-
 <style scoped>
-
-img.h2-header{
+/* welcome to title */
+.h1-title{
+  position: relative;
+  left: 400px;
+  font-size: 26px;
+}
+/* logo */
+.h2-header img{
   margin: 0;
   width: 550px;
   height: 400px;
   padding: 0;
   position: relative;
-  left: 240px;
-  bottom: 90px;
+  left: 370px;
+  bottom: 100px;
   opacity: 86%;
 }
-#title h1{
+/* dive deeper title */
+.h3-title{
   position: relative;
-  left: 160px;
-  top: 40px;
+  right: 100px;
+  width: 100%;
 }
-#title h3{
-  position: relative;
-  right: 400px;
-}
+
 #title{
   position: relative;
-  left: 260px;
   top: 20px;
   background-color: rgba(234, 228, 223, 0.928);
   border: 2px solid #e0e0e0;
@@ -162,6 +171,7 @@ img{
   left: 100px;
   margin: 50px auto;
   font-family: 'Poppins', sans-serif;
+  display: fle;
 }
 
 .post-header, .post-footer {
@@ -227,5 +237,62 @@ img{
   font-family: 'Georgia', serif;
   font-size: 1.2em;
   margin-right: 20px;
+}
+@media (max-width: 768px) {
+  *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .h1-title {
+    position: relative;
+    left: 20px;
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .h2-header img {
+    width: 300px;
+    height: 200px;
+    left: 0;
+    bottom: 50px;
+    margin: 0 auto;
+  }
+
+  .h3-title {
+    right: 0;
+    text-align: center;
+    width: 350px
+  }
+
+  #title {
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .post-content {
+    flex-direction: column; /* Set direction to column for smaller screens */
+    align-items: center; /* Center align the content */
+  }
+
+  .post-media {
+    max-width: 100%;
+    font-size: 14px;
+    margin-bottom: 20px; /* Add some space between the image and the message */
+  }
+
+  .post-message-singlepage {
+    width: 100%; /* Set the message to take the full width */
+    text-align: left; /* Align text to the left */
+  }
 }
 </style>
