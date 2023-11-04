@@ -19,7 +19,7 @@
     </div>
     <div class="post-content">
       <p class="post-message-singlepage">{{ post.message }}</p>
-      <!-- Incorporate media display based on type -->
+      <!-- Incorporating media display based on type -->
       <div v-if="video" class="post-media">
         <video width="300" height="500" :src="post.mediaUrl" controls>
           <source :src="post.mediaUrl" type="video/*" />
@@ -39,68 +39,89 @@
 </template>
 
 <script>
-import axios from 'axios';
-
+const axios = require('axios')
 export default {
-  data() {
+  data () {
     return {
+      id: this.$route.params.id,
       post: {},
       image: false,
-      video: false,
-      hasBeenRead: false // This will keep track if the user has read the post
-    };
-  },
-  beforeCreate() {
-    // Redirect to login if no user ID is present in localStorage
-    const userId = localStorage.getItem('userId');
-    if (!userId) {
-      this.$router.push({ path: '/login' });
+      video: false
     }
   },
-  async mounted() {
-  const postId = this.$route.params.id;
-  const token = localStorage.getItem('token'); // Assume token is stored as a string
-  // Parse userId as a number
-  const userId = Number(localStorage.getItem('userId')); // Convert to number for comparison
-
-  try {
-    // Get post details
-    let response = await axios.get(`http://localhost:3000/api/posts/singlepost/${postId}`, {
+  beforeCreate () {
+    // making sure user is logged in
+    const userId = localStorage.getItem('userId')
+    if (!userId) {
+      this.$router.push({ path: '/login' })
+    }
+  },
+  // grabbing post
+  async mounted () {
+    const token = JSON.parse(localStorage.getItem('token'))
+    const userId = JSON.parse(localStorage.getItem('userId'))
+    let response = await axios.get('http://localhost:3000/api/posts/singlepost/' + this.id, {
       headers: {
         Authorization: `Bearer ${token}`
       }
-    });
-
-    this.post = response.data;
-
-    // Check if the post has been read by converting each userId in the usersRead array to a number
-    this.hasBeenRead = this.post.usersRead && this.post.usersRead.map(Number).includes(userId);
-
-    // Check if the mediaUrl is an image
-    this.image = /\.(jpg|jpeg|png|gif|webp)$/i.test(this.post.mediaUrl);
-
-    // Check if the mediaUrl is a video
-    this.video = /\.(mp4|webm|ogg)$/i.test(this.post.mediaUrl);
-
-    // If the post has not been read, mark it as read
-    if (!this.hasBeenRead) {
-      // Mark the post as read by sending the numeric userId
-      await axios.put(`http://localhost:3000/api/posts/${postId}`, { postUserId: userId }, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        }
-      });
-      // Update local state
-      this.hasBeenRead = true;
+    })
+    console.log(response)
+    this.post = response.data
+    // showing media if any is added
+    if (this.post.mediaUrl === null) {
+      this.video = false
+      this.image = false
+    } else if (
+      this.post.mediaUrl.includes('jpeg') ||
+      this.post.mediaUrl.includes('jpg') ||
+      this.post.mediaUrl.includes('webp') ||
+      this.post.mediaUrl.includes('gif')
+    ) {
+      this.video = false
+      this.image = true
+    } else if (
+      this.post.mediaUrl.includes('mp4') ||
+      this.post.mediaUrl.includes('oog') ||
+      this.post.mediaUrl.includes('webm')
+    ) {
+      this.video = true
+      this.image = false
     }
-  } catch (error) {
-    console.error('There was an error:', error.message);
-    // Additional error handling logic as needed
+    console.log(userId)
+    // seeing if user read post
+    try {
+      response = await axios.put(
+        'http://localhost:3000/api/posts/' + this.id,
+        {
+          postUserId: parseInt(localStorage.getItem('userId'))
+        },
+        {
+          headers: {
+            'content-type': 'application/json',
+            // eslint-disable-next-line
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+    } catch (error) {
+      if (error.esponse.status === 304) {
+        console.log('User already read')
+      } else {
+        console.log(error)
+      }
+    }
+    if (response.status === 200) {
+      if (!this.post.usersRead.includes(userId)) {
+        this.post.usersRead.push(userId)
+        console.log(this.post.usersRead)
+      } else {
+        console.log('User already read')
+      }
+    }
   }
 }
-};
 </script>
+
 
 <style scoped>
 /* welcome to title */
@@ -138,6 +159,7 @@ export default {
   opacity: 96%;
   display: flex;
   height: 180px;
+  width: 100%;
 }
 
 img{
@@ -255,13 +277,14 @@ body{
     left: 20px;
     font-size: 20px;
     text-align: center;
+    width: 250px;
   }
 
   .h2-header img {
     width: 300px;
     height: 200px;
     left: 0;
-    bottom: 50px;
+    bottom: 10px;
     margin: 0 auto;
   }
 
@@ -274,12 +297,34 @@ body{
   #title {
     flex-direction: column;
     height: auto;
-    width: 100%;
     align-items: center;
     justify-content: center;
+    display: flex;
+    width: 410px;
+    position: relative;
+    left: 100px;
+    
   }
+.title-container{
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  width: 100%;
+  align-items: center;
+  position: absolute;
+  top: 150%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 
+}
+
+  .single-post-container{
+    float: center;
+    width: 100%;
+  }
   .post-content {
+   
+
     flex-direction: column; /* Set direction to column for smaller screens */
     align-items: center; /* Center align the content */
   }

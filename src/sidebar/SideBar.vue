@@ -128,17 +128,53 @@ export default {
       }
     }
   }
+}
 
-  @media (max-width: 768px) {
-    width: 0;
-
-    &.active {
-      width: 0;
-    }
-
-    .toggle-button {
-      display: block;
-    }
+/* Responsive styles */
+@media (max-width: 768px) {
+  .sidebar {
+    display: flex;
+    background-color: transparent;
+    flex-direction: column;
+    width: 50px;
+    justify-content: flex-start;
+    position: absolute;
+    top: 0;
   }
+
+  .sidebar.active {
+    width: 100%; 
+    height: 100% ;
+    background-color:#1d1b31;
+    
+  }
+
+  
+  .sidebar .toggle-button .toggle-icon{
+    border: 3px solid white;
+    border-bottom: 4px solid #1d1b31;
+    display: flex; /* Ensures that the toggle button is always visible */
+    position: relative; /* Positions the toggle button on the top */
+    top: 0; /* Adjust this value to position the toggle button as desired */
+    left: 0; /* Adjust if you want some space from the left edge */
+    z-index: 1010; /* Ensures it's above the sidebar */
+  }
+
+  .sidebar nav {
+    display: none; /* Hide the navigation when sidebar is not active */
+  }
+
+  .sidebar.active nav {
+    display: flex; /* Show the navigation when sidebar is active */
+  }
+
+  .sidebar #elementToHide {
+    display: none; /* Hide the logo when sidebar is not active */
+  }
+
+  .sidebar.active #elementToHide {
+    display: block; /* Show the logo when sidebar is active */
+  }
+  
 }
 </style>

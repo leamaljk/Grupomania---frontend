@@ -1,44 +1,64 @@
 <template>
   <div class="post-container">
-    <div class="post" v-for="(post, index) in posts"
-      :key="index" @click="viewPost(post.id)">
-    
-      <div v-if="!post.usersRead.map(Number).includes(numericUserId)" class="unread-label">
+    <div
+      v-on:click="($event) => singlePostView(post.id)"
+      v-for="post in posts"
+      :key="post.id"
+      class="post"
+    >
+      <div v-if="post.unread" class="unread-label">
         <span>New</span>
       </div>
       
       <h2 class="post-title">{{ post.title }}</h2>
-      <p class="post-message">{{ post.message }}</p>
-      
+      <p class="post-message3">{{ post.message }}</p>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
-  props: {
-    posts: {
-      type: Array,
-      required: true,
-    },
-    userId: {
-      type: String,
-      required: true,
-    },
+  data() {
+    return {
+      posts: [],
+    };
   },
-  computed: {
-    // Convert userId prop to a number for comparison
-    numericUserId() {
-      return parseInt(this.userId, 10);
+  beforeCreate() {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      this.$router.push({ path: '/login' });
+    }
+  },
+  async mounted() {
+    const token = JSON.parse(localStorage.getItem('token'));
+    const userId = JSON.parse(localStorage.getItem('userId'));
+
+    try {
+      const response = await axios.get('http://localhost:3000/api/posts', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      this.posts = response.data.map((post) => ({
+        ...post,
+        unread: !post.usersRead.includes(userId),
+      }));
+    } catch (error) {
+      this.errorMessage = error.message;
+      console.error('There was an error!', error);
     }
   },
   methods: {
-    viewPost(id) {
+    singlePostView(id) {
       this.$router.push(`/singlepost/${id}`);
-    }
-  }
+    },
+  },
 };
 </script>
+
 
 <style scoped>
 .unread-label {
@@ -50,11 +70,11 @@ export default {
   font-weight: bold;
   text-transform: uppercase;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  position: absolute;
-  top: 0px;
-  right: 0px;
+  position: relative;
+  width: 60px;
+  bottom: 20px;
+  left: -20px;
   transition: transform 0.2s ease-in-out;
-  display: flex;
   align-items: center;
   justify-content: center;
   

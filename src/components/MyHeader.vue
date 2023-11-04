@@ -94,7 +94,6 @@ img {
   margin-left: 20px;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   header {
     flex-direction: column;

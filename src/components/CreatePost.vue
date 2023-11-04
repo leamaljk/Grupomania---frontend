@@ -38,11 +38,14 @@ export default {
       title: '',
       message: '',
       file: null,
-      userId: localStorage.getItem('userId')
+      userId: localStorage.getItem('userId'),
+      usersRead: [] 
     };
   },
   methods: {
-    async createPost() {
+    async createPost() 
+    {
+      const userId = parseInt(localStorage.getItem('userId'));
       if (this.title === '' && this.message === '') {
         this.error = 'Title and Message Required';
         return;
@@ -53,12 +56,16 @@ export default {
         this.error = 'Message Required';
         return;
       }
-
+      this.usersRead.push(userId);
+      
       const formData = new FormData();
       formData.append('userId', this.userId);
       formData.append('title', this.title);
       formData.append('message', this.message);
-      
+
+      // Parsing usersRead as an array of integers
+      formData.append('usersRead', JSON.stringify(this.usersRead.map(Number)));
+
       if (this.file) {
         formData.append('mediaUrl', this.file);
       }
@@ -73,7 +80,7 @@ export default {
         };
 
         const response = await axios.post('http://localhost:3000/api/posts', formData, config);
-        
+
         if (response.status === 201) {
           console.log(response.data);
           this.$router.push({ path: '/' });
@@ -91,6 +98,7 @@ export default {
   },
 };
 </script>
+
 
 <style lang="scss" scoped>
 .container {
