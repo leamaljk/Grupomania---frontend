@@ -1,24 +1,30 @@
-# frontend
+## Create a Web Application with Vue.js
 
-## Project setup
+I was tasked with building an internal social network for Groupomania's employees to facilitate more interaction between colleagues.
+
+### Skills Learned
+- Store data securely using SQL
+- Build a full-stack solution
+- Manage a user session
+- Send personalized content to a client
+- Languages and Skills Used
+- Html
+- CSS
+- Vue.js
+- SQL
+
+- ## Project setup
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## Run Project
 
-### Compiles and minifies for production
-```
-npm run build
-```
+Backend:
+- npm run start
+  
+Frontend:
+- npm run serve
 
-### Lints and fixes files
-```
-npm run lint
-```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+
